@@ -5,6 +5,18 @@ from basic_interpreter.interpreter import Interpreter
 
 
 @pytest.mark.parametrize(
+    'token, other, equal',
+    [
+        (Token(TokenType.INTEGER, 3), Token(TokenType.INTEGER, 3), True),
+        (Token(TokenType.INTEGER, 3), Token(TokenType.INTEGER, 6), False),
+        (Token(TokenType.INTEGER, 3), Token(TokenType.INTEGER, 3.5), False),
+    ]
+)
+def test_token_equality(token: Token, other: Token, equal: bool):
+    assert (token == other) == equal
+
+
+@pytest.mark.parametrize(
     'type_, value, representation',
     [
         (TokenType.INTEGER, 5, 'INTEGER:5'),
