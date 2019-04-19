@@ -7,7 +7,7 @@ class TokenType(Enum):
 
 class Token:
 
-    def __init__(self, type_, value):
+    def __init__(self, type_: TokenType, value):
         self.type_ = type_
         self.value = value
 
@@ -19,3 +19,6 @@ class Token:
 
     def __repr__(self):
         return self.__str__()
+
+    def __eq__(self, other):
+        return self.type_ == other.type_ and self.value == other.value
