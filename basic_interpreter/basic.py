@@ -1,4 +1,5 @@
 
 class Token:
 
-    pass
+    def __init__(self, type_, value):
+        pass
