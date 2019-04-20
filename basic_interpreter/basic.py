@@ -20,7 +20,12 @@ class TokenType:
         raise NotImplementedError
 
     @classmethod
-    def parse(cls, value) -> (Type, int):
+    def parse(cls, value: str) -> (Type, int):
+        """Tries to parse given input string LTR as Type class represents,
+        returning (None, 0) if it cannot be parsed, else returning the parsed
+        portion of the input as the correct type, and the position of the next
+        character in the input string.
+        """
         raise NotImplementedError
 
 
@@ -96,6 +101,10 @@ class PLUS(TokenType, OPERATOR):
 
 
 def parse(text: str) -> (Token, int):
+    """Parses text to a token and an end-position, by the principle that the
+    best match is the parser which can gobble the _most_ text from the input
+    string.
+    """
     # parser, parser_value, parser_position
     scores = [(parser, *parser(text)) for parser in TokenType.parsers]
     # sort by position descending
