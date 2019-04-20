@@ -30,6 +30,9 @@ class Token:
         self.type_ = type_
         self.value = value
 
+    def __call__(self, *args, **kwargs):
+        return self.type_.__call__(*args, **kwargs)
+
     def __str__(self):
         if self.value is None:
             return self.type_.name
@@ -44,7 +47,7 @@ class Token:
 
     def __add__(self, other: 'Token'):
         assert self.type_ is other.type_
-        self.type_.add(self.value, other.value)
+        return self.type_.add(self.value, other.value)
 
 
 class INTEGER(TokenType):
@@ -52,8 +55,8 @@ class INTEGER(TokenType):
     name = 'INTEGER'
 
     @classmethod
-    def add(cls, left: int, right: int) -> int:
-        return left + right
+    def add(cls, left: int, right: int) -> Token:
+        return Token(cls, left + right)
 
     @classmethod
     def parse(cls, value: str):
@@ -77,7 +80,7 @@ class OPERATOR:
 
 class PLUS(TokenType, OPERATOR):
 
-    name = '+'
+    name = 'OPERATOR'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):

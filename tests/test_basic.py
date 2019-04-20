@@ -38,9 +38,8 @@ def test_token_representation(type_, value, representation):
         ('3 + 5', [Token(INTEGER, 3), Token(PLUS, '+'), Token(INTEGER, 5)]),
     ]
 )
-def test_interpreter_atomic_inputs(atom, atom_token):
-    """Atomic tokens should be returned as-is."""
-    assert Interpreter(atom)() == atom_token
+def test_interpreter_parse_tokens(atom, atom_token):
+    assert Interpreter(atom).parse_tokens() == atom_token
 
 
 @pytest.mark.parametrize(
@@ -49,3 +48,14 @@ def test_interpreter_atomic_inputs(atom, atom_token):
 )
 def test_try_cast_successful(symbol):
     parse(symbol)
+
+
+@pytest.mark.parametrize(
+    'text, result',
+    [
+        ('5 + 2', Token(INTEGER, 7)),
+        ('1 + 2 + 3 + 4', Token(INTEGER, 10)),
+    ]
+)
+def test_interpreter_evaluates_integer_addition(text, result):
+    assert Interpreter(text)() == result
