@@ -1,6 +1,6 @@
 import pytest
 
-from basic_interpreter.basic import Token, TokenType, INTEGER
+from basic_interpreter.basic import Token, INTEGER, PLUS, try_cast
 from basic_interpreter.interpreter import Interpreter
 
 
@@ -31,8 +31,17 @@ def test_token_representation(type_, value, representation):
     'atom, atom_token',
     [
         ('5', Token(INTEGER, 5)),
+        ('+', Token(PLUS, '+'))
     ]
 )
 def test_interpreter_atomic_inputs(atom, atom_token):
     """Atomic tokens should be returned as-is."""
     assert Interpreter(atom)() == atom_token
+
+
+@pytest.mark.parametrize(
+    'symbol',
+    [5, '+', '102']
+)
+def test_try_cast_successful(symbol):
+    try_cast(symbol)

@@ -1,6 +1,6 @@
 from typing import Type
 
-from .basic import Token, TokenType, INTEGER
+from .basic import Token, TokenType, try_cast
 
 
 class Interpreter:
@@ -13,17 +13,11 @@ class Interpreter:
 
     def _evaluate(self):
         type_ = self._infer_type(self.text)
-        value = self._cast_value(self.text, type_)
+        value = type_.cast(self.text)
         return Token(type_, value)
 
     def _infer_type(self, text: str) -> Type[TokenType]:
-        if text.isdigit():
-            return INTEGER
-        else:
-            raise NotImplementedError
-
-    def _cast_value(self, value, type_: Type[TokenType]):
-        return type_.cast(value)
+        return try_cast(text)
 
 
 def main():
