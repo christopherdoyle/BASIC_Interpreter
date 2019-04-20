@@ -4,20 +4,19 @@ from typing import Type
 class TokenType:
 
     name = None
-    casts = []
     parsers = []
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls.casts.append(cls.cast)
         cls.parsers.append(cls.parse)
 
     @staticmethod
-    def add(left, right):
-        raise NotImplementedError
+    def _eat_pre_whitespace(text: str):
+        stripped = text.lstrip()
+        return stripped, len(text) - len(stripped)
 
-    @classmethod
-    def cast(cls, value):
+    @staticmethod
+    def add(left, right):
         raise NotImplementedError
 
     @classmethod
@@ -57,19 +56,16 @@ class INTEGER(TokenType):
         return left + right
 
     @classmethod
-    def cast(cls, value):
-        return int(value)
-
-    @classmethod
     def parse(cls, value: str):
-        pos = 0
+        _, starting_pos = cls._eat_pre_whitespace(value)
+        pos = starting_pos
         while pos < len(value) and value[pos].isdigit():
             pos += 1
 
-        if pos == 0:
+        if pos == starting_pos:
             return None, pos
         else:
-            return int(value[:pos]), pos
+            return int(value[starting_pos:pos]), pos
 
 
 class OPERATOR:
@@ -88,17 +84,11 @@ class PLUS(TokenType, OPERATOR):
         return left + right
 
     @classmethod
-    def cast(cls, value):
-        if value == '+':
-            return value
-        else:
-            raise ValueError
-
-    @classmethod
     def parse(cls, value: str):
-        try:
-            return cls.cast(value[0]), 1
-        except:
+        _, pos = cls._eat_pre_whitespace(value)
+        if value[pos] == '+':
+            return '+', pos + 1
+        else:
             return None, 0
 
 
