@@ -1,13 +1,27 @@
-from enum import Enum
+from typing import Type
 
 
-class TokenType(Enum):
-    INTEGER = 1
+class TokenType:
+
+    name = None
+
+    @classmethod
+    def cast(cls, value):
+        raise NotImplementedError
+
+
+class INTEGER(TokenType):
+
+    name = 'INTEGER'
+
+    @classmethod
+    def cast(cls, value):
+        return int(value)
 
 
 class Token:
 
-    def __init__(self, type_: TokenType, value):
+    def __init__(self, type_: Type[TokenType], value):
         self.type_ = type_
         self.value = value
 
