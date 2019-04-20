@@ -10,12 +10,16 @@ class TokenType:
         super().__init_subclass__(**kwargs)
         cls.casts.append(cls.cast)
 
+    @staticmethod
+    def add(left, right):
+        raise NotImplementedError
+
     @classmethod
     def cast(cls, value):
         raise NotImplementedError
 
     @classmethod
-    def add(cls, left, right):
+    def parse(cls, value) -> (Type, int):
         raise NotImplementedError
 
 
@@ -47,11 +51,23 @@ class INTEGER(TokenType):
     name = 'INTEGER'
 
     @classmethod
+    def add(cls, left: int, right: int) -> int:
+        return left + right
+
+    @classmethod
     def cast(cls, value):
         return int(value)
 
-    def add(self, left: int, right: int) -> int:
-        return left + right
+    @classmethod
+    def parse(cls, value: str):
+        pos = 0
+        while pos < len(value) and value[pos].isdigit():
+            pos += 1
+
+        if pos == 0:
+            return None, pos
+        else:
+            return int(value[:pos]), pos
 
 
 class OPERATOR(TokenType):
@@ -76,11 +92,15 @@ class PLUS(OPERATOR):
         else:
             raise ValueError
 
+    @classmethod
+    def parse(cls, value: str):
+        return cls.cast(value[0]), 1
 
-def try_cast(value) -> Type[TokenType]:
+
+def infer_type(text: str) -> Type[TokenType]:
     for cast in TokenType.casts:
         try:
-            cast(value)
+            cast(text[0])
             break
         except:
             continue
