@@ -15,8 +15,12 @@ class TokenType:
         stripped = text.lstrip()
         return stripped, len(text) - len(stripped)
 
-    @staticmethod
-    def add(left, right):
+    @classmethod
+    def add(cls, left, right):
+        raise NotImplementedError
+
+    @classmethod
+    def sub(cls, left, right):
         raise NotImplementedError
 
     @classmethod
@@ -54,6 +58,10 @@ class Token:
         assert self.type_ is other.type_
         return self.type_.add(self.value, other.value)
 
+    def __sub__(self, other: 'Token'):
+        assert self.type_ is other.type_
+        return self.type_.sub(self.value, other.value)
+
 
 class INTEGER(TokenType):
 
@@ -62,6 +70,10 @@ class INTEGER(TokenType):
     @classmethod
     def add(cls, left: int, right: int) -> Token:
         return Token(cls, left + right)
+
+    @classmethod
+    def sub(cls, left: int, right: int) -> Token:
+        return Token(cls, left - right)
 
     @classmethod
     def parse(cls, value: str):
@@ -78,14 +90,14 @@ class INTEGER(TokenType):
 
 class OPERATOR:
 
+    name = 'OPERATOR'
+
     @classmethod
     def __call__(cls, left, right):
         raise NotImplementedError
 
 
 class PLUS(TokenType, OPERATOR):
-
-    name = 'OPERATOR'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
@@ -96,6 +108,21 @@ class PLUS(TokenType, OPERATOR):
         _, pos = cls._eat_pre_whitespace(value)
         if value[pos] == '+':
             return '+', pos + 1
+        else:
+            return None, 0
+
+
+class MINUS(TokenType, OPERATOR):
+
+    @classmethod
+    def __call__(cls, left: Token, right: Token):
+        return left - right
+
+    @classmethod
+    def parse(cls, value: str):
+        _, pos = cls._eat_pre_whitespace(value)
+        if value[pos] == '-':
+            return '-', pos + 1
         else:
             return None, 0
 
