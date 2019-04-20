@@ -1,12 +1,29 @@
-from typing import Type
+from .basic import Token, parse, INTEGER, OPERATOR
 
-from .basic import Token, TokenType, parse, INTEGER, OPERATOR
+
+class Lexer:
+
+    def __init__(self, text: str):
+        self.text = text
+
+    def parse_tokens(self):
+        return list(self.parse_tokens_iter())
+
+    def parse_tokens_iter(self):
+        """Read all tokens from the input string, left-to-right."""
+        pos = 0
+        while True:
+            next_token, next_pos = parse(self.text[pos:])
+            yield next_token
+            pos += next_pos
+            if pos >= len(self.text):
+                break
 
 
 class Interpreter:
 
-    def __init__(self, text: str):
-        self.text = text
+    def __init__(self, lexer: Lexer):
+        self.lexer = lexer
 
     def __call__(self):
         return self._evaluate()
@@ -16,7 +33,7 @@ class Interpreter:
         # read all tokens into an RPN stack --- shunting-yard algorithm
         rpn_stack = []
         operator_stack = []
-        for token in self.parse_tokens_iter():
+        for token in self.lexer.parse_tokens_iter():
             if token.type_ is INTEGER:
                 rpn_stack.append(token)
             elif issubclass(token.type_, OPERATOR):
@@ -47,19 +64,6 @@ class Interpreter:
         result = operand_stack.pop()
         return result
 
-    def parse_tokens(self):
-        return list(self.parse_tokens_iter())
-
-    def parse_tokens_iter(self):
-        """Read all tokens from the input string, left-to-right."""
-        pos = 0
-        while True:
-            next_token, next_pos = parse(self.text[pos:])
-            yield next_token
-            pos += next_pos
-            if pos >= len(self.text):
-                break
-
 
 def main():
     while True:
@@ -71,7 +75,7 @@ def main():
         if user_input.strip() == '':
             continue
 
-        interpreter = Interpreter(user_input)
+        interpreter = Interpreter(Lexer(user_input))
         result = interpreter()
         print(result)
 
