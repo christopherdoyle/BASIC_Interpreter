@@ -1,6 +1,6 @@
 import pytest
 
-from basic_interpreter.basic import Token, INTEGER, PLUS, infer_type
+from basic_interpreter.basic import Token, INTEGER, PLUS, parse
 from basic_interpreter.interpreter import Interpreter
 
 
@@ -33,7 +33,9 @@ def test_token_representation(type_, value, representation):
         ('5', [Token(INTEGER, 5)]),
         ('125', [Token(INTEGER, 125)]),
         ('+', [Token(PLUS, '+')]),
+        ('++', [Token(PLUS, '+'), Token(PLUS, '+')]),
         ('3+5', [Token(INTEGER, 3), Token(PLUS, '+'), Token(INTEGER, 5)]),
+        ('3 + 5', [Token(INTEGER, 3), Token(PLUS, '+'), Token(INTEGER, 5)]),
     ]
 )
 def test_interpreter_atomic_inputs(atom, atom_token):
@@ -46,4 +48,4 @@ def test_interpreter_atomic_inputs(atom, atom_token):
     ['5', '+', '102']
 )
 def test_try_cast_successful(symbol):
-    infer_type(symbol)
+    parse(symbol)

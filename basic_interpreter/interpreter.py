@@ -1,6 +1,6 @@
 from typing import Type
 
-from .basic import Token, TokenType, infer_type
+from .basic import Token, TokenType, parse
 
 
 class Interpreter:
@@ -16,23 +16,13 @@ class Interpreter:
 
         pos = 0
         while True:
-            next_token, next_pos = self._parse_next_token(self.text, pos)
+            next_token, next_pos = parse(self.text[pos:])
             tokens.append(next_token)
-            pos = next_pos
+            pos += next_pos
             if pos >= len(self.text):
                 break
 
         return tokens
-
-    def _infer_type(self, text: str) -> Type[TokenType]:
-        return infer_type(text)
-
-    def _parse_next_token(self, text: str, pos: int) -> (Type[TokenType], int):
-        type_ = self._infer_type(text[pos:])
-        value, pos_ = type_.parse(text[pos:])
-        assert pos_ > 0, 'Type cast / parse mismatch'
-        pos += pos_
-        return Token(type_, value), pos
 
 
 def main():

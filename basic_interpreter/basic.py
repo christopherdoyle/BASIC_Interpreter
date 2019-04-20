@@ -5,10 +5,12 @@ class TokenType:
 
     name = None
     casts = []
+    parsers = []
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         cls.casts.append(cls.cast)
+        cls.parsers.append(cls.parse)
 
     @staticmethod
     def add(left, right):
@@ -70,14 +72,14 @@ class INTEGER(TokenType):
             return int(value[:pos]), pos
 
 
-class OPERATOR(TokenType):
+class OPERATOR:
 
     @classmethod
     def __call__(cls, left, right):
         raise NotImplementedError
 
 
-class PLUS(OPERATOR):
+class PLUS(TokenType, OPERATOR):
 
     name = '+'
 
@@ -94,17 +96,19 @@ class PLUS(OPERATOR):
 
     @classmethod
     def parse(cls, value: str):
-        return cls.cast(value[0]), 1
-
-
-def infer_type(text: str) -> Type[TokenType]:
-    for cast in TokenType.casts:
         try:
-            cast(text[0])
-            break
+            return cls.cast(value[0]), 1
         except:
-            continue
-    else:
-        raise TypeError
+            return None, 0
 
-    return cast.__self__
+
+def parse(text: str) -> (Token, int):
+    # parser, parser_value, parser_position
+    scores = [(parser, *parser(text)) for parser in TokenType.parsers]
+    # sort by position descending
+    scores.sort(key=lambda x: -x[2])
+    if scores[0][2] == 0:
+        # everything failed to parse
+        raise TypeError
+    else:
+        return Token(scores[0][0].__self__, scores[0][1]), scores[0][2]
