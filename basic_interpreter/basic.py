@@ -1,14 +1,18 @@
+import abc
+import inspect
 from typing import Type
 
 
-class TokenType:
+class TokenType(metaclass=abc.ABCMeta):
 
     name = None
     parsers = []
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls.parsers.append(cls.parse)
+        if not inspect.isabstract(cls):
+            # i.e. if not an abstract class
+            cls.parsers.append(cls.parse)
 
     @staticmethod
     def _eat_pre_whitespace(text: str):
@@ -16,21 +20,47 @@ class TokenType:
         return stripped, len(text) - len(stripped)
 
     @classmethod
-    def add(cls, left, right):
-        raise NotImplementedError
-
-    @classmethod
-    def sub(cls, left, right):
-        raise NotImplementedError
-
-    @classmethod
+    @abc.abstractmethod
     def parse(cls, value: str) -> (Type, int):
         """Tries to parse given input string LTR as Type class represents,
         returning (None, 0) if it cannot be parsed, else returning the parsed
         portion of the input as the correct type, and the position of the next
         character in the input string.
         """
-        raise NotImplementedError
+        pass
+
+
+class ValueTokenType(TokenType, metaclass=abc.ABCMeta):
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+    @classmethod
+    @abc.abstractmethod
+    def add(cls, left, right) -> 'Token':
+        pass
+
+
+class OperatorTokenType(TokenType, metaclass=abc.ABCMeta):
+
+    @classmethod
+    @abc.abstractmethod
+    def __call__(cls, left: 'Token', right: 'Token') -> 'Token':
+        pass
+
+    @property
+    @abc.abstractmethod
+    def symbol(self):
+        pass
+
+    @classmethod
+    def parse(cls, value: str):
+        _, pos = cls._eat_pre_whitespace(value)
+        if value[pos] == cls.symbol:
+            return None, pos + 1
+        else:
+            return None, 0
+
 
 
 class Token:
@@ -63,7 +93,7 @@ class Token:
         return self.type_.sub(self.value, other.value)
 
 
-class INTEGER(TokenType):
+class INTEGER(ValueTokenType):
 
     name = 'INTEGER'
 
@@ -88,45 +118,34 @@ class INTEGER(TokenType):
             return int(value[starting_pos:pos]), pos
 
 
-class OPERATOR:
-
-    @classmethod
-    def __call__(cls, left, right):
-        raise NotImplementedError
-
-
-class PLUS(TokenType, OPERATOR):
+class PLUS(OperatorTokenType):
 
     name = 'PLUS'
+    symbol = '+'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
         return left + right
 
-    @classmethod
-    def parse(cls, value: str):
-        _, pos = cls._eat_pre_whitespace(value)
-        if value[pos] == '+':
-            return None, pos + 1
-        else:
-            return None, 0
 
-
-class MINUS(TokenType, OPERATOR):
+class MINUS(OperatorTokenType):
 
     name = 'MINUS'
+    symbol = '-'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
         return left - right
 
+
+class MULT(OperatorTokenType):
+
+    name = 'MULT'
+    symbol = '*'
+
     @classmethod
-    def parse(cls, value: str):
-        _, pos = cls._eat_pre_whitespace(value)
-        if value[pos] == '-':
-            return None, pos + 1
-        else:
-            return None, 0
+    def __call__(cls, left: Token, right: Token):
+        return left * right
 
 
 def parse(text: str) -> (Token, int):

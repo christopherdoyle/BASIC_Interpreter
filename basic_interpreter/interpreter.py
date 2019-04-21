@@ -1,4 +1,4 @@
-from .basic import Token, parse, INTEGER, OPERATOR
+from .basic import Token, parse, INTEGER, OperatorTokenType
 
 
 class Lexer:
@@ -34,7 +34,7 @@ class Interpreter:
         for token in self.lexer:
             if token.type_ is INTEGER:
                 rpn_stack.append(token)
-            elif issubclass(token.type_, OPERATOR):
+            elif issubclass(token.type_, OperatorTokenType):
                 rpn_stack.extend(operator_stack)
                 operator_stack.clear()
                 operator_stack.append(token)
@@ -45,7 +45,7 @@ class Interpreter:
         # evaluate the RPN stack
         operand_stack = []
         for token in rpn_stack:
-            if issubclass(token.type_, OPERATOR):
+            if issubclass(token.type_, OperatorTokenType):
                 try:
                     right = operand_stack.pop()
                     left = operand_stack.pop()
