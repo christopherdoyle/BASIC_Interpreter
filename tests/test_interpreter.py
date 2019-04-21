@@ -4,15 +4,6 @@ from basic_interpreter.basic import Token, INTEGER, PLUS, MINUS
 from basic_interpreter.interpreter import Interpreter, Lexer
 
 
-class DummyLexer:
-
-    def __init__(self, tokens):
-        self.tokens = tokens
-
-    def parse_tokens_iter(self):
-        yield from self.tokens
-
-
 def int_add_lexer_factory(integers):
     lexer = Lexer('')
 
@@ -27,7 +18,8 @@ def int_add_lexer_factory(integers):
                 break
         yield Token(INTEGER, integers[-1])
 
-    lexer.parse_tokens_iter = _iter
+    lexer.__iter__ = _iter
+    lexer.__next__ = yield from _iter()
     return lexer
 
 
@@ -44,7 +36,7 @@ def int_add_lexer_factory(integers):
     ]
 )
 def test_lexer_parse_tokens(atom, atom_token):
-    assert Lexer(atom).parse_tokens() == atom_token
+    assert list(Lexer(atom)) == atom_token
 
 
 # @pytest.mark.parametrize(
