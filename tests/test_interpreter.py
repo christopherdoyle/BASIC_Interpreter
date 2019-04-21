@@ -36,11 +36,11 @@ def int_add_lexer_factory(integers):
     [
         ('5', [Token(INTEGER, 5)]),
         ('125', [Token(INTEGER, 125)]),
-        ('+', [Token(PLUS, '+')]),
-        ('++', [Token(PLUS, '+'), Token(PLUS, '+')]),
-        ('3+5', [Token(INTEGER, 3), Token(PLUS, '+'), Token(INTEGER, 5)]),
-        ('3 + 5', [Token(INTEGER, 3), Token(PLUS, '+'), Token(INTEGER, 5)]),
-        ('1 - 2 + 3', [Token(INTEGER, 1), Token(MINUS, '-'), Token(INTEGER, 2), Token(PLUS, '+'), Token(INTEGER, 3)]),
+        ('+', [Token(PLUS)]),
+        ('++', [Token(PLUS), Token(PLUS)]),
+        ('3+5', [Token(INTEGER, 3), Token(PLUS), Token(INTEGER, 5)]),
+        ('3 + 5', [Token(INTEGER, 3), Token(PLUS), Token(INTEGER, 5)]),
+        ('1 - 2 + 3', [Token(INTEGER, 1), Token(MINUS), Token(INTEGER, 2), Token(PLUS), Token(INTEGER, 3)]),
     ]
 )
 def test_lexer_parse_tokens(atom, atom_token):

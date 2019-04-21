@@ -35,7 +35,7 @@ class TokenType:
 
 class Token:
 
-    def __init__(self, type_: Type[TokenType], value):
+    def __init__(self, type_: Type[TokenType], value=None):
         self.type_ = type_
         self.value = value
 
@@ -90,14 +90,14 @@ class INTEGER(TokenType):
 
 class OPERATOR:
 
-    name = 'OPERATOR'
-
     @classmethod
     def __call__(cls, left, right):
         raise NotImplementedError
 
 
 class PLUS(TokenType, OPERATOR):
+
+    name = 'PLUS'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
@@ -107,12 +107,14 @@ class PLUS(TokenType, OPERATOR):
     def parse(cls, value: str):
         _, pos = cls._eat_pre_whitespace(value)
         if value[pos] == '+':
-            return '+', pos + 1
+            return None, pos + 1
         else:
             return None, 0
 
 
 class MINUS(TokenType, OPERATOR):
+
+    name = 'MINUS'
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
@@ -122,7 +124,7 @@ class MINUS(TokenType, OPERATOR):
     def parse(cls, value: str):
         _, pos = cls._eat_pre_whitespace(value)
         if value[pos] == '-':
-            return '-', pos + 1
+            return None, pos + 1
         else:
             return None, 0
 
