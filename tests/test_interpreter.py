@@ -60,3 +60,7 @@ def test_interpreter_evaluates_integer_addition(lexed_text, result):
 
 def test_interpreter_evaluates_integer_subtraction():
     assert Interpreter(Lexer('5 - 2'))() == Token(INTEGER, 3)
+
+
+def test_interpreter_evaluates_integer_multiplication():
+    assert Interpreter(Lexer('10 * 25'))() == Token(INTEGER, 250)

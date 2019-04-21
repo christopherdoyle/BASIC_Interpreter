@@ -40,6 +40,21 @@ class ValueTokenType(TokenType, metaclass=abc.ABCMeta):
     def add(cls, left, right) -> 'Token':
         pass
 
+    @classmethod
+    @abc.abstractmethod
+    def sub(cls, left, right) -> 'Token':
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def mul(cls, left, right) -> 'Token':
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def div(cls, left, right) -> 'Token':
+        pass
+
 
 class OperatorTokenType(TokenType, metaclass=abc.ABCMeta):
 
@@ -60,7 +75,6 @@ class OperatorTokenType(TokenType, metaclass=abc.ABCMeta):
             return None, pos + 1
         else:
             return None, 0
-
 
 
 class Token:
@@ -92,6 +106,14 @@ class Token:
         assert self.type_ is other.type_
         return self.type_.sub(self.value, other.value)
 
+    def __mul__(self, other: 'Token'):
+        assert self.type_ is other.type_
+        return self.type_.mul(self.value, other.value)
+
+    def __div__(self, other: 'Token'):
+        assert self.type_ is other.type_
+        return self.type_.div(self.value, other.value)
+
 
 class INTEGER(ValueTokenType):
 
@@ -116,6 +138,14 @@ class INTEGER(ValueTokenType):
             return None, pos
         else:
             return int(value[starting_pos:pos]), pos
+
+    @classmethod
+    def mul(cls, left, right) -> 'Token':
+        return Token(cls, left * right)
+
+    @classmethod
+    def div(cls, left, right) -> 'Token':
+        return Token(cls, int(left / right))
 
 
 class PLUS(OperatorTokenType):

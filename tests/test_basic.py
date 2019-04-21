@@ -28,7 +28,7 @@ def test_token_representation(type_, value, representation):
 
 @pytest.mark.parametrize(
     'symbol',
-    ['5', '+', '102', '-']
+    ['5', '+', '102', '-', '*']
 )
 def test_try_cast_successful(symbol):
     parse(symbol)
