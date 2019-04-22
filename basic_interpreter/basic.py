@@ -31,36 +31,34 @@ class TokenType(metaclass=abc.ABCMeta):
 
 
 class ValueTokenType(TokenType, metaclass=abc.ABCMeta):
-
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
 
     @classmethod
     @abc.abstractmethod
-    def add(cls, left, right) -> 'Token':
+    def add(cls, left, right) -> "Token":
         pass
 
     @classmethod
     @abc.abstractmethod
-    def sub(cls, left, right) -> 'Token':
+    def sub(cls, left, right) -> "Token":
         pass
 
     @classmethod
     @abc.abstractmethod
-    def mul(cls, left, right) -> 'Token':
+    def mul(cls, left, right) -> "Token":
         pass
 
     @classmethod
     @abc.abstractmethod
-    def div(cls, left, right) -> 'Token':
+    def div(cls, left, right) -> "Token":
         pass
 
 
 class OperatorTokenType(TokenType, metaclass=abc.ABCMeta):
-
     @classmethod
     @abc.abstractmethod
-    def __call__(cls, left: 'Token', right: 'Token') -> 'Token':
+    def __call__(cls, left: "Token", right: "Token") -> "Token":
         pass
 
     @property
@@ -78,7 +76,6 @@ class OperatorTokenType(TokenType, metaclass=abc.ABCMeta):
 
 
 class Token:
-
     def __init__(self, type_: Type[TokenType], value=None):
         self.type_ = type_
         self.value = value
@@ -90,34 +87,34 @@ class Token:
         if self.value is None:
             return self.type_.name
         else:
-            return f'{self.type_.name}:{self.value}'
+            return f"{self.type_.name}:{self.value}"
 
     def __repr__(self):
         return self.__str__()
 
-    def __eq__(self, other: 'Token'):
+    def __eq__(self, other: "Token"):
         return self.type_ == other.type_ and self.value == other.value
 
-    def __add__(self, other: 'Token'):
+    def __add__(self, other: "Token"):
         assert self.type_ is other.type_
         return self.type_.add(self.value, other.value)
 
-    def __sub__(self, other: 'Token'):
+    def __sub__(self, other: "Token"):
         assert self.type_ is other.type_
         return self.type_.sub(self.value, other.value)
 
-    def __mul__(self, other: 'Token'):
+    def __mul__(self, other: "Token"):
         assert self.type_ is other.type_
         return self.type_.mul(self.value, other.value)
 
-    def __div__(self, other: 'Token'):
+    def __div__(self, other: "Token"):
         assert self.type_ is other.type_
         return self.type_.div(self.value, other.value)
 
 
 class INTEGER(ValueTokenType):
 
-    name = 'INTEGER'
+    name = "INTEGER"
 
     @classmethod
     def add(cls, left: int, right: int) -> Token:
@@ -140,18 +137,18 @@ class INTEGER(ValueTokenType):
             return int(value[starting_pos:pos]), pos
 
     @classmethod
-    def mul(cls, left, right) -> 'Token':
+    def mul(cls, left, right) -> "Token":
         return Token(cls, left * right)
 
     @classmethod
-    def div(cls, left, right) -> 'Token':
+    def div(cls, left, right) -> "Token":
         return Token(cls, int(left / right))
 
 
 class PLUS(OperatorTokenType):
 
-    name = 'PLUS'
-    symbol = '+'
+    name = "PLUS"
+    symbol = "+"
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
@@ -160,8 +157,8 @@ class PLUS(OperatorTokenType):
 
 class MINUS(OperatorTokenType):
 
-    name = 'MINUS'
-    symbol = '-'
+    name = "MINUS"
+    symbol = "-"
 
     @classmethod
     def __call__(cls, left: Token, right: Token):
@@ -170,8 +167,8 @@ class MINUS(OperatorTokenType):
 
 class MULT(OperatorTokenType):
 
-    name = 'MULT'
-    symbol = '*'
+    name = "MULT"
+    symbol = "*"
 
     @classmethod
     def __call__(cls, left: Token, right: Token):

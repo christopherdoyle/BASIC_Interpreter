@@ -2,7 +2,6 @@ from .basic import Token, parse, INTEGER, OperatorTokenType
 
 
 class Lexer:
-
     def __init__(self, text: str):
         self.pos = 0
         self.text = text
@@ -13,13 +12,12 @@ class Lexer:
     def __next__(self):
         if self.pos >= len(self.text):
             raise StopIteration
-        token, rel_pos = parse(self.text[self.pos:])
+        token, rel_pos = parse(self.text[self.pos :])
         self.pos += rel_pos
         return token
 
 
 class Interpreter:
-
     def __init__(self, lexer: Lexer):
         self.lexer = lexer
 
@@ -66,11 +64,11 @@ class Interpreter:
 def main():
     while True:
         try:
-            user_input = input('BASIC> ')
+            user_input = input("BASIC> ")
         except EOFError:
             break
 
-        if user_input.strip() == '':
+        if user_input.strip() == "":
             continue
 
         interpreter = Interpreter(Lexer(user_input))
@@ -78,5 +76,5 @@ def main():
         print(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
