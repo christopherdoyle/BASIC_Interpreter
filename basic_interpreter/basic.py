@@ -107,7 +107,7 @@ class Token:
         assert self.type_ is other.type_
         return self.type_.mul(self.value, other.value)
 
-    def __div__(self, other: "Token"):
+    def __truediv__(self, other: "Token"):
         assert self.type_ is other.type_
         return self.type_.div(self.value, other.value)
 
@@ -173,6 +173,16 @@ class MULT(OperatorTokenType):
     @classmethod
     def __call__(cls, left: Token, right: Token):
         return left * right
+
+
+class DIV(OperatorTokenType):
+
+    name = "DIV"
+    symbol = "/"
+
+    @classmethod
+    def __call__(cls, left: Token, right: Token):
+        return left / right
 
 
 def parse(text: str) -> (Token, int):
